@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1ee3f5;
+            padding-top: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .btn-margin {
+            margin-top: 20px;
+        }
+
+        .logo {
+            width: 100px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .card-panel {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="images.jpeg" alt="Library Management System Logo" class="logo">
+        <h4 class="center-align">Library Management System</h4>
+        <div class="card-panel">
+            <ul class="collection with-header">
+                <li class="collection-header"><h5>Options</h5></li>
+                <li class="collection-item"><a href="#" onclick="displayBooks()">Display Books</a></li>
+                <li class="collection-item"><a href="#" onclick="searchBooks()">Search Books</a></li>
+                <li class="collection-item"><a href="#" onclick="lendBook()">Lend Book</a></li>
+                <li class="collection-item"><a href="#" onclick="returnBook()">Return Book</a></li>
+                <li class="collection-item"><a href="#" onclick="exitSystem()">Exit</a></li>
+            </ul>
+        </div>
+        <div id="output" class="card-panel"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        function displayBooks() {
+            fetch('/display_books')
+            .then(response => response.json())
+            .then(data => {
+                let output = '<h5>Books available in the library:</h5>';
+                data.forEach(book => {
+                    output += `<p>Title: ${book.title}, Author: ${book.author}, ISBN: ${book.ISBN}, Quantity: ${book.quantity}</p>`;
+                });
+                document.getElementById('output').innerHTML = output;
+            });
+        }
+
+        function searchBooks() {
+            let title = prompt("Enter title of the book to search:");
+            fetch(`/search_book/${title}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    alert("Book not found.");
+                } else {
+                    let output = '<h5>Books found:</h5>';
+                    data.forEach(book => {
+                        output += `<p>Title: ${book.title}, Author: ${book.author}, ISBN: ${book.ISBN}, Quantity: ${book.quantity}</p>`;
+                    });
+                    document.getElementById('output').innerHTML = output;
+                }
+            });
+        }
+
+        function lendBook() {
+            let title = prompt("Enter title of the book to lend:");
+            fetch(`/lend_book/${title}`)
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+            });
+        }
+
+        function returnBook() {
+            let title = prompt("Enter title of the book to return:");
+            fetch(`/return_book/${title}`)
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+            });
+        }
+
+        function exitSystem() {
+            if (confirm("Are you sure you want to exit?")) {
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>
